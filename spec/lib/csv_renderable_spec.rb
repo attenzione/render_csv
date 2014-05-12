@@ -65,5 +65,31 @@ describe RenderCsv::CsvRenderable do
         expect(csv_renderable_array.to_csv(options)).to eql "age,weight,human_age\n3,76.8,25\n3,68.2,25\n5,64.0,33\n"
       end
     end
+
+    context 'options with :only param' do
+      it 'should order columns based on options[:only]' do
+        options = { only: [:age, :name] }
+
+        expect(csv_renderable_array.to_csv(options)).to eql "age,name\n3,Sebastian O'Connor\n3,Ruby\n5,Shelby\n"
+      end
+
+      it 'should add custom methods' do
+        options = { only: [:age, :weight, :human_age] }
+
+        expect(csv_renderable_array.to_csv(options)).to eql "age,weight,human_age\n3,76.8,25\n3,68.2,25\n5,64.0,33\n"
+      end
+    end
+
+    context 'options with lambda column' do
+      it 'should ' do
+        options = {
+          only: [ :name, :age, :extra_count ],
+          extra_count: -> { age * 2 }
+        }
+
+        expect(csv_renderable_array.to_csv(options)).to eql "name,age,extra_count\nSebastian O'Connor,3,6\nRuby,3,6\nShelby,5,10\n"
+      end
+    end
+
   end
 end
