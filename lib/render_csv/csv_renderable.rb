@@ -7,6 +7,7 @@ module RenderCsv
     # :only => [:col1, :col2] # Specify which columns to include, also affect on column order
     # :except => [:col1, :col2] # Specify which columns to exclude
     # :add_methods => [:method1, :method2] # Include addtional methods that aren't columns
+    # other options key could be used for custom columns with value as lambda
     def to_csv(options = {})
       return '' if empty?
       return join(',') unless first.class.respond_to? :column_names
