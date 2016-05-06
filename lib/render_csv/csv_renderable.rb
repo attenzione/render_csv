@@ -12,14 +12,31 @@ module RenderCsv
       return '' if empty?
       return join(',') unless first.class.respond_to? :column_names
 
-      columns = options[:only] ? options[:only].map(&:to_s) : first.class.column_names
-      columns -= options[:except].map(&:to_s) if options[:except]
-      columns += options[:add_methods].map(&:to_s) if options[:add_methods]
+      columns = options[:only] ? options[:only] : first.class.column_names
+      columns -= options[:except] if options[:except]
+      columns += options[:add_methods] if options[:add_methods]
 
       CSV.generate(encoding: 'utf-8') do |row|
-        row << columns
+
+        # first row
+        row << columns.map { |v| v.is_a?(Hash) ? v.values.first.to_s : v.to_s }
+
         self.each do |obj|
-          row << columns.map { |c| options[c.to_sym].respond_to?(:call) ? obj.instance_exec(&options[c.to_sym]) : obj.send(c) }
+          row << columns.map do |column|
+
+            column = column.keys.first if column.is_a?(Hash)
+
+            if options[column.to_sym].respond_to?(:call)
+              obj.instance_exec(&options[column.to_sym])
+            elsif obj.respond_to?(column)
+              obj.send(column)
+            elsif options[:method_missing].respond_to?(:call)
+              options[:method_missing].call(obj, column)
+            else
+              obj.send(column)
+            end
+
+          end
         end
       end
     end
