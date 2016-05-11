@@ -21,7 +21,7 @@ module RenderCsv
       CSV.generate(encoding: 'utf-8', col_sep: options[:separator], force_quotes: options[:force_quotes]) do |rows|
 
         if options[:force_excel_separator]
-          rows << ["sep=#{options[:sep]}"]
+          rows << ["sep=#{options[:separator]}"]
         end
 
         # first row
