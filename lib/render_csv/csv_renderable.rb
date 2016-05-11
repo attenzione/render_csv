@@ -12,17 +12,23 @@ module RenderCsv
       return '' if empty?
       return join(',') unless first.class.respond_to? :column_names
 
+      options = { separator: ',', force_quotes: false, force_excel_sep: false }.merge(options)
+
       columns = options[:only] ? options[:only] : first.class.column_names
       columns -= options[:except] if options[:except]
       columns += options[:add_methods] if options[:add_methods]
 
-      CSV.generate(encoding: 'utf-8') do |row|
+      CSV.generate(encoding: 'utf-8', col_sep: options[:separator], force_quotes: options[:force_quotes]) do |rows|
+
+        if options[:force_excel_separator]
+          rows << ["sep=#{options[:sep]}"]
+        end
 
         # first row
-        row << columns.map { |v| v.is_a?(Hash) ? v.values.first.to_s : v.to_s }
+        rows << columns.map { |v| v.is_a?(Hash) ? v.values.first.to_s : v.to_s }
 
         self.each do |obj|
-          row << columns.map do |column|
+          rows << columns.map do |column|
 
             column = column.keys.first if column.is_a?(Hash)
 
