@@ -12,7 +12,7 @@ module RenderCsv
       return '' if empty?
       return join(',') unless first.class.respond_to? :column_names
 
-      options = { separator: ',', force_quotes: false, force_excel_separator: false }.merge(options)
+      options = { separator: ',', force_quotes: false, include_excel_separator: false }.merge(options)
 
       columns = options[:only] ? options[:only] : first.class.column_names
       columns -= options[:except] if options[:except]
@@ -20,7 +20,7 @@ module RenderCsv
 
       CSV.generate(encoding: 'utf-8', col_sep: options[:separator], force_quotes: options[:force_quotes]) do |rows|
 
-        if options[:force_excel_separator]
+        if options[:include_excel_separator]
           rows << ["sep=#{options[:separator]}"]
         end
 
