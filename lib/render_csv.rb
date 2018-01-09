@@ -8,7 +8,7 @@ module RenderCsv
         filename = options[:filename] || options[:template]
         csv.extend RenderCsv::CsvCustomRenderable
         data = csv.to_custom_csv(options)
-        send_data data, type: "#{Mime::CSV}; charset=utf-8; header=present", disposition: "attachment; filename=#{filename}.csv"
+        send_data data, type: "#{Mime[:csv].to_s}; charset=utf-8; header=present", disposition: "attachment; filename=#{filename}.csv"
       end
     end
   end
